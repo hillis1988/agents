@@ -1,0 +1,4 @@
+# file: C:\Users\roy_m\git\agents\utilities\sql_analyzer.py
+# hypothesis_version: 6.151.9
+
+['\nLIMIT 1000', '(?<!\\S)\\*(?!\\S)', '--[^\\n]*', '/\\*.*?\\*/', 'CARTESIAN_JOIN', 'MISSING_LIMIT', 'MISSING_WHERE', 'SELECT\\s.*?\\*', 'SELECT_STAR', '\\bJOIN\\b', '\\bLIMIT\\s+\\d+', '\\bWHERE\\b', '\\s*SELECT\\b', 'info', 'warning']

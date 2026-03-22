@@ -1,0 +1,4 @@
+# file: C:\Users\roy_m\git\agents\utilities\snowflake_connector.py
+# hypothesis_version: 6.151.9
+
+['SNOWFLAKE_ACCOUNT', 'SNOWFLAKE_DATABASE', 'SNOWFLAKE_PASSWORD', 'SNOWFLAKE_SCHEMA', 'SNOWFLAKE_USER', 'SNOWFLAKE_WAREHOUSE', 'account', 'conn', 'database', 'password', 'schema', 'snowflake', 'user', 'warehouse']

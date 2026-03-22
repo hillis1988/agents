@@ -1,0 +1,4 @@
+# file: C:\Users\roy_m\git\agents\utilities\sql_analyzer.py
+# hypothesis_version: 6.151.9
+
+['\nLIMIT 1000', '"', "'", '(', ')', ',', ',\n    ', '--[^\\n]*', '/\\*.*?\\*/', ';', ';\n', ';\n\n', 'CARTESIAN_JOIN', 'IMPLICIT_CONVERSION', 'LEADING_WILDCARD', 'MISSING_ALIAS', 'MISSING_LIMIT', 'MISSING_WHERE', 'ON', 'SELECT', 'SELECT_STAR', 'SUBQUERY_IN_WHERE', 'USING', '[\\w"]+', '\\bFROM\\s*\\(', '\\bIN\\s*\\(\\s*SELECT\\b', '\\bJOIN\\b', '\\bLIKE\\s+[\'\\"]%', '\\bLIMIT\\b', '\\bLIMIT\\s+(\\S+)', '\\bLIMIT\\s+\\d+', '\\bWHERE\\b', '\\s*SELECT\\b', '\\s*USE\\b', '\\s+', 'info', 'warning']
