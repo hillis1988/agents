@@ -157,3 +157,26 @@ def execute(sql: str) -> pd.DataFrame:
     except Exception as exc:
         # Covers both snowflake.connector.errors.ProgrammingError and Snowpark exceptions
         raise SnowflakeQueryError(str(exc)) from exc
+
+
+def fetch_schema(database: str, schema: str) -> pd.DataFrame:
+    """Return INFORMATION_SCHEMA.COLUMNS for all tables/views in *database.schema*.
+
+    Returns an empty DataFrame if the query fails (e.g. no access).
+    Columns returned: TABLE_NAME, COLUMN_NAME, DATA_TYPE, IS_NULLABLE, ORDINAL_POSITION
+    """
+    sql = f"""
+        SELECT
+            TABLE_NAME,
+            COLUMN_NAME,
+            DATA_TYPE,
+            IS_NULLABLE,
+            ORDINAL_POSITION
+        FROM {database}.INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = '{schema.upper()}'
+        ORDER BY TABLE_NAME, ORDINAL_POSITION
+    """
+    try:
+        return execute(sql)
+    except Exception:
+        return pd.DataFrame(columns=["TABLE_NAME", "COLUMN_NAME", "DATA_TYPE", "IS_NULLABLE", "ORDINAL_POSITION"])
