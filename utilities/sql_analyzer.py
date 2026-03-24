@@ -520,3 +520,62 @@ def _split_on_top_level_comma(s: str) -> List[str]:
     if current:
         parts.append(''.join(current).strip())
     return parts
+
+
+# ---------------------------------------------------------------------------
+# Cost saving estimator
+# ---------------------------------------------------------------------------
+
+# Rough credit weights per anti-pattern (relative, not exact billing figures).
+# Based on common Snowflake cost-driver guidance:
+#   SELECT *       → scans all columns → high data volume impact
+#   MISSING_LIMIT  → unbounded result → risk of full table scan materialisation
+#   MISSING_WHERE  → full table scan
+#   CARTESIAN_JOIN → exponential row explosion
+#   LEADING_WILDCARD → disables micro-partition pruning
+#   SUBQUERY_IN_WHERE → correlated re-execution per row
+#   MISSING_ALIAS  → minor — clarity only, no direct cost
+_COST_WEIGHTS = {
+    SELECT_STAR:       0.30,
+    MISSING_LIMIT:     0.20,
+    MISSING_WHERE:     0.25,
+    CARTESIAN_JOIN:    0.50,
+    LEADING_WILDCARD:  0.15,
+    SUBQUERY_IN_WHERE: 0.20,
+    MISSING_ALIAS:     0.02,
+}
+
+# Snowflake list price per credit (USD) as of 2024 — Enterprise tier
+_CREDIT_PRICE_USD = 3.00
+# Assumed baseline credits consumed by a "bad" query on a Medium warehouse
+_BASELINE_CREDITS = 0.05
+
+
+def estimate_savings(tips: List[Tip]) -> dict:
+    """Return a cost saving estimate dict for the given tips.
+
+    Keys:
+        credits_saved  float  — estimated Snowflake credits saved per run
+        usd_saved      float  — USD equivalent at Enterprise list price
+        pct_reduction  int    — % reduction vs unoptimised baseline
+        label          str    — human-readable summary string
+    """
+    if not tips:
+        return {"credits_saved": 0.0, "usd_saved": 0.0, "pct_reduction": 0, "label": "No savings estimated."}
+
+    total_weight = sum(_COST_WEIGHTS.get(t.code, 0.0) for t in tips)
+    # Cap at 90% — we can never guarantee 100% savings
+    pct = min(int(total_weight * 100), 90)
+    credits = round(_BASELINE_CREDITS * (pct / 100), 4)
+    usd = round(credits * _CREDIT_PRICE_USD, 4)
+
+    label = (
+        f"Applying these suggestions could reduce query cost by ~{pct}% "
+        f"(≈ {credits} credits / ${usd:.4f} per execution at Enterprise list price)."
+    )
+    return {
+        "credits_saved": credits,
+        "usd_saved": usd,
+        "pct_reduction": pct,
+        "label": label,
+    }
